@@ -31,6 +31,11 @@ public:
 
 	void OnUpdateMyAmmo_Implementation(int Ammo);
 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void OnUpdateMyMag(int Mag);
+
+	void OnUpdateMyMag_Implementation(int Mag);
+
 public:
 	// TSubclassOf : 지정한 클래스와 상속한 모든 클래스를 지정가능.
 	// CPP에서 위젯을 다룰려면 모듈 추가가 필요하다. (ShootingCodeGame.Build.cs->"UMG" 추가)

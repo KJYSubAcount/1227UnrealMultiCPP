@@ -33,9 +33,12 @@ void AMyHUD::BindMyPlayerState()
 		{
 			// 플레이어 스테이트를 지정해서 캐스트 후 플레이어 컨트롤러의 플레이어 스테이트를 가져온다.
 			PS->Dele_UpdateHP.AddDynamic(this, &AMyHUD::OnUpdateMyHP);
-
 			// 플레이어 스테이트의 현재 체력과 최대 체력을 넘겨준다.
 			OnUpdateMyHP(PS->m_CurHP, 100.f);
+
+			PS->Dele_UpdateMag.AddDynamic(this, &AMyHUD::OnUpdateMyMag);
+			OnUpdateMyMag(PS->m_Mag);
+
 			GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, FString::Printf(TEXT("HUD Bind Success!")));
 			return;
 		}
@@ -53,5 +56,9 @@ void AMyHUD::OnUpdateMyHP_Implementation(float CurHP, float MaxHP)
 }
 
 void AMyHUD::OnUpdateMyAmmo_Implementation(int Ammo)
+{
+}
+
+void AMyHUD::OnUpdateMyMag_Implementation(int Mag)
 {
 }

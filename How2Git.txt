@@ -1,0 +1,1 @@
+깃허브에 올릴때 Content Config Plugins(사용시에) Source 폴더와 UProject실행파일만 올려도 무방하다.

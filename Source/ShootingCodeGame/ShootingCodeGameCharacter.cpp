@@ -13,6 +13,8 @@
 #include "Net/UnrealNetwork.h"
 #include "PlayerState/MyPlayerState.h"
 #include "Blueprints/Weapon.h"
+#include "BaseItem.h"
+#include "HUD/MyHUD.h"
 //위젯
 #include "Blueprint/UserWidget.h"
 
@@ -137,6 +139,12 @@ void AShootingCodeGameCharacter::ResReloadAnim_Implementation()
 	if (nullptr == InterfaceObj)
 	{
 		return;
+	}
+
+	AMyPlayerState* pPS = Cast<AMyPlayerState>(GetPlayerState());
+	if (IsValid(pPS))
+	{
+		pPS->UseMag();
 	}
 
 	InterfaceObj->Execute_EventReload(m_EquipWeapon);
@@ -402,10 +410,74 @@ void AShootingCodeGameCharacter::EventUpdateNameTag_Implementation()
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Silver, TEXT("EventUpdateNameTag!"));
 }
 
-void AShootingCodeGameCharacter::EventUpdateNameTagHP_Implementation(int CurHP, int MaxHP)
+void AShootingCodeGameCharacter::EventUpdateNameTagHP_Implementation(float CurHP, float MaxHP)
 {
 }
 
 void AShootingCodeGameCharacter::BindPlayerState()
 {
+	// pPS 에 GetPlayerState() 를 MyPlayerState 로 캐스팅한 값을 넣어준다.
+	AMyPlayerState* pPS = Cast<AMyPlayerState>(GetPlayerState());
+	if (IsValid(pPS))
+	{
+		// pPS 의 델리게이트에 EventUpdateNameTagHP 를 바인딩한다.
+		pPS->Dele_UpdateHP.AddDynamic(this, &AShootingCodeGameCharacter::EventUpdateNameTagHP);
+		EventUpdateNameTagHP(pPS->m_CurHP, 100.f);
+		return;
+	}
+	// 타이머 핸들을 이용해서 바인딩을 다시 시도한다.
+	FTimerManager& TimeManager = GetWorld()->GetTimerManager();
+	TimeManager.SetTimer(TH_BindPlayerState, this, &AShootingCodeGameCharacter::BindPlayerState, 0.1f, false);
 }
+
+void AShootingCodeGameCharacter::EventGetItem_Implementation(EItemType itemType)
+{
+	switch (itemType)
+	{
+	case EItemType::IT_MAG:
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("EventGetItem_Mag!!"));
+
+		AMyPlayerState* pPS = Cast<AMyPlayerState>(GetPlayerState());
+		if (IsValid(pPS))
+		{
+			pPS->AddMag();
+		}
+	}
+	break;
+	case EItemType::IT_HEAL:
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Blue, TEXT("EventGetItem_Heal!!"));
+
+		AMyPlayerState* pPS = Cast<AMyPlayerState>(GetPlayerState());
+		if (IsValid(pPS))
+		{
+			pPS->AddHeal(30);
+		}
+	}
+	break;
+	case EItemType::IT_Etc:
+	{
+
+	}
+	break;
+	default:
+		break;
+	}
+}
+
+	//AMyPlayerState* pPS = Cast<AMyPlayerState>(GetPlayerState());
+	//if (IsValid(pPS))
+	//{
+	//	pPS->AddMag();
+	//	// HUD 가져오기
+	//	APlayerController* PC = Cast<APlayerController>(GetController());
+	//	if (IsValid(PC))
+	//	{
+	//		AMyHUD* pHUD = Cast<AMyHUD>(PC->GetHUD());
+	//		if (IsValid(pHUD))
+	//		{
+	//			pHUD->OnUpdateMyMag(pPS->m_Mag);
+	//		}
+	//	}
+	//}

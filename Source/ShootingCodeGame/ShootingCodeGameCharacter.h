@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemInterface.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "ShootingCodeGameCharacter.generated.h"
@@ -16,7 +17,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class AShootingCodeGameCharacter : public ACharacter
+class AShootingCodeGameCharacter : public ACharacter, public IItemInterface
 {
 	GENERATED_BODY()
 
@@ -153,11 +154,18 @@ public:
 	void EventUpdateNameTag_Implementation();
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	void EventUpdateNameTagHP(int CurHP,int MaxHP);
+	void EventUpdateNameTagHP(float CurHP, float MaxHP);
 
-	void EventUpdateNameTagHP_Implementation(int CurHP, int MaxHP);
+	void EventUpdateNameTagHP_Implementation(float CurHP, float MaxHP);
 
 	void BindPlayerState();
+
+public:
+	//====== 아이템 인터페이스 구현 ======//
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	void EventGetItem(EItemType itemType);
+
+	void EventGetItem_Implementation(EItemType itemType) override;
 
 public:
 	//에임 오프셋 적용
@@ -166,6 +174,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite)
 	AActor* m_EquipWeapon;
+
+	UPROPERTY(BlueprintReadWrite)
+	AActor* m_EquipMag;
 
 	FTimerHandle TH_BindSetOwner;
 
@@ -176,5 +187,7 @@ public:
 	UUserWidget* NameTagWidget;
 
 	FTimerHandle TH_NameTag;
+
+	FTimerHandle TH_BindPlayerState;
 };
 
